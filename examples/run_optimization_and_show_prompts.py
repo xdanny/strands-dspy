@@ -1,16 +1,17 @@
 """Run optimization and display optimized prompts in detail."""
 
-import sys
 import json
+import sys
 from pathlib import Path
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 import dspy
+
 from strands_dspy.optimizers.mipro import MIPROOptimizer
 from strands_dspy.types import OptimizationConfig
-from tests.fixtures import split_golden_dataset, contains_metric
+from tests.fixtures import contains_metric, split_golden_dataset
 from tests.test_config import setup_test_env
 
 
@@ -92,7 +93,7 @@ def main():
         if isinstance(prompt_data, dict):
             # Display instruction
             if "instruction" in prompt_data:
-                print(f"\n📝 Instruction:")
+                print("\n📝 Instruction:")
                 print(f"   {prompt_data['instruction']}")
 
             # Display demonstrations
@@ -117,7 +118,7 @@ def main():
     test_questions = [
         "What is the capital of France?",
         "What is 2+2?",
-        "Who wrote Romeo and Juliet?"
+        "Who wrote Romeo and Juliet?",
     ]
 
     for question in test_questions:
@@ -128,14 +129,18 @@ def main():
     # Save results to JSON
     output_file = Path(__file__).parent / "optimization_results.json"
     with open(output_file, "w") as f:
-        json.dump({
-            "best_score": result.best_score,
-            "timestamp": result.timestamp,
-            "train_size": result.train_size,
-            "val_size": result.val_size,
-            "optimizer": result.optimizer,
-            "prompts": result.prompts,
-        }, f, indent=2)
+        json.dump(
+            {
+                "best_score": result.best_score,
+                "timestamp": result.timestamp,
+                "train_size": result.train_size,
+                "val_size": result.val_size,
+                "optimizer": result.optimizer,
+                "prompts": result.prompts,
+            },
+            f,
+            indent=2,
+        )
 
     print(f"\n💾 Results saved to: {output_file}")
     print("\n✅ Done!")

@@ -158,6 +158,4 @@ class RAGProgram(dspy.Module):
         # Generate answer with context
         result = self.generate(question=question, context=context)
 
-        return dspy.Prediction(
-            answer=result.answer, context=context, reasoning=result.rationale
-        )
+        return dspy.Prediction(answer=result.answer, context=context, reasoning=result.rationale)

@@ -1,9 +1,10 @@
 """Pre-built input and output extractors for common patterns."""
 
-from typing import Any, Dict, List
+from collections.abc import Callable
+from typing import Any
 
 
-def extract_first_user_text(messages: List[Dict]) -> Dict[str, Any]:
+def extract_first_user_text(messages: list[dict]) -> dict[str, Any]:
     """Extract the first user message text as 'question' field.
 
     Args:
@@ -26,7 +27,7 @@ def extract_first_user_text(messages: List[Dict]) -> Dict[str, Any]:
     return {"question": ""}
 
 
-def extract_last_assistant_text(result) -> Dict[str, Any]:
+def extract_last_assistant_text(result) -> dict[str, Any]:
     """Extract the last assistant message text as 'answer' field.
 
     Args:
@@ -53,7 +54,7 @@ def extract_last_assistant_text(result) -> Dict[str, Any]:
     return {"answer": ""}
 
 
-def extract_all_user_messages(messages: List[Dict]) -> Dict[str, Any]:
+def extract_all_user_messages(messages: list[dict]) -> dict[str, Any]:
     """Extract all user messages as 'questions' field (list).
 
     Args:
@@ -78,11 +79,11 @@ def extract_all_user_messages(messages: List[Dict]) -> Dict[str, Any]:
 
 
 def extract_field_from_message(
-    messages: List[Dict],
+    messages: list[dict],
     field_name: str = "question",
     role: str = "user",
     index: int = 0,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Extract a specific message into a named field.
 
     Args:
@@ -114,7 +115,7 @@ def extract_field_from_message(
     return {field_name: ""}
 
 
-def combine_extractors(*extractors) -> callable:
+def combine_extractors(*extractors) -> Callable:
     """Combine multiple extractors into one by merging their outputs.
 
     Args:
@@ -130,9 +131,11 @@ def combine_extractors(*extractors) -> callable:
         ...         lambda m: extract_field_from_message(m, "context", "system")
         ...     )(messages)
     """
+
     def combined_extractor(data):
         result = {}
         for extractor in extractors:
             result.update(extractor(data))
         return result
+
     return combined_extractor

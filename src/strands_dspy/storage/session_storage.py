@@ -3,11 +3,11 @@
 import json
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from strands.session import SessionManager
-from strands.types.session import SessionAgent, SessionMessage
 from strands.types.content import Message
+from strands.types.session import SessionMessage
 
 from strands_dspy.types import OptimizationResult, TrainingExample
 
@@ -38,10 +38,10 @@ class DSPySessionStorage:
         self,
         session_id: str,
         agent_id: str,
-        inputs: Dict[str, Any],
-        outputs: Dict[str, Any],
+        inputs: dict[str, Any],
+        outputs: dict[str, Any],
         score: float,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> None:
         """Store a training example as a session message.
 
@@ -106,9 +106,9 @@ class DSPySessionStorage:
         self,
         session_id: str,
         agent_id: str,
-        min_score: Optional[float] = None,
-        limit: Optional[int] = None,
-    ) -> List[TrainingExample]:
+        min_score: float | None = None,
+        limit: int | None = None,
+    ) -> list[TrainingExample]:
         """Retrieve training examples from session storage.
 
         Args:
@@ -217,7 +217,7 @@ class DSPySessionStorage:
         self,
         session_id: str,
         agent_id: str,
-    ) -> Optional[OptimizationResult]:
+    ) -> OptimizationResult | None:
         """Retrieve the most recent optimization result.
 
         Args:
@@ -255,7 +255,7 @@ class DSPySessionStorage:
         self,
         session_id: str,
         agent_id: str,
-    ) -> List[OptimizationResult]:
+    ) -> list[OptimizationResult]:
         """Retrieve all optimization results in chronological order.
 
         Args:
@@ -293,7 +293,7 @@ class DSPySessionStorage:
         self,
         session_id: str,
         agent_id: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get statistics about stored training examples.
 
         Args:

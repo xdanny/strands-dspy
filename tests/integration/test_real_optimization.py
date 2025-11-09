@@ -1,14 +1,15 @@
 """Real optimization test with harder problems that show actual improvement."""
 
-import pytest
 import dspy
-from strands_dspy.optimizers.mipro import MIPROOptimizer
+import pytest
+
 from strands_dspy.optimizers.gepa import GEPAOptimizer
+from strands_dspy.optimizers.mipro import MIPROOptimizer
 from strands_dspy.types import OptimizationConfig
 from tests.fixtures.hard_dataset import (
-    split_hard_dataset,
     hard_reasoning_metric,
     simple_contains_metric,
+    split_hard_dataset,
 )
 from tests.test_config import setup_test_env
 
@@ -39,9 +40,9 @@ def evaluate_program(program, examples, metric):
             result = metric(example, prediction, None, None, None)
 
             # Extract score from result
-            if isinstance(result, dspy.Prediction) and hasattr(result, 'score'):
+            if isinstance(result, dspy.Prediction) and hasattr(result, "score"):
                 score = result.score
-                feedback = result.feedback if hasattr(result, 'feedback') else ""
+                feedback = result.feedback if hasattr(result, "feedback") else ""
             else:
                 score = float(result)
                 feedback = ""
@@ -81,7 +82,7 @@ def test_gepa_real_improvement():
     train_examples, val_examples = split_hard_dataset(train_ratio=0.7)
 
     print(f"\n{'='*80}")
-    print(f"GEPA REAL OPTIMIZATION TEST - Hard Reasoning Problems")
+    print("GEPA REAL OPTIMIZATION TEST - Hard Reasoning Problems")
     print(f"{'='*80}")
     print(f"\n📊 Dataset: {len(train_examples)} train, {len(val_examples)} val")
 
@@ -94,7 +95,7 @@ def test_gepa_real_improvement():
     config = OptimizationConfig(
         optimizer_type="gepa",
         auto_budget=None,  # Manual budget
-        num_trials=5,      # Only 5 iterations for quick test
+        num_trials=5,  # Only 5 iterations for quick test
         minibatch_size=2,
         track_stats=True,
     )
@@ -105,7 +106,7 @@ def test_gepa_real_improvement():
     )
 
     # Run optimization
-    print(f"\n🚀 Running GEPA optimization (max 5 iterations)...")
+    print("\n🚀 Running GEPA optimization (max 5 iterations)...")
     optimized_program, result = optimizer.optimize(
         program=BasicQA(),
         trainset=train_examples,
@@ -113,7 +114,7 @@ def test_gepa_real_improvement():
     )
 
     # Evaluate optimized program
-    print(f"\n✨ OPTIMIZED (After GEPA)")
+    print("\n✨ OPTIMIZED (After GEPA)")
     optimized_score = evaluate_program(optimized_program, val_examples, hard_reasoning_metric)
 
     # Show improvement
@@ -121,7 +122,7 @@ def test_gepa_real_improvement():
     improvement_pct = (improvement / baseline_score * 100) if baseline_score > 0 else 0
 
     print(f"\n{'='*80}")
-    print(f"RESULTS")
+    print("RESULTS")
     print(f"{'='*80}")
     print(f"Baseline Score:   {baseline_score:.1%}")
     print(f"Optimized Score:  {optimized_score:.1%}")
@@ -130,25 +131,26 @@ def test_gepa_real_improvement():
 
     # Show optimized prompts
     print(f"\n{'='*80}")
-    print(f"OPTIMIZED PROMPTS")
+    print("OPTIMIZED PROMPTS")
     print(f"{'='*80}")
 
     for predictor_name, prompt_data in result.prompts.items():
         print(f"\nPredictor: {predictor_name}")
         if isinstance(prompt_data, dict) and "instruction" in prompt_data:
-            print(f"\nInstruction:")
+            print("\nInstruction:")
             print(f"{prompt_data['instruction']}")
 
     # Verify actual improvement
-    assert optimized_score >= baseline_score, \
-        f"Optimization should not make things worse (baseline: {baseline_score:.1%}, optimized: {optimized_score:.1%})"
+    assert (
+        optimized_score >= baseline_score
+    ), f"Optimization should not make things worse (baseline: {baseline_score:.1%}, optimized: {optimized_score:.1%})"
 
     if improvement > 0.05:  # At least 5% improvement
         print(f"\n✅ GEPA achieved significant improvement: {improvement:+.1%}")
     else:
-        print(f"\n⚠️  Minor or no improvement - dataset may be too hard/easy or need more iterations")
+        print("\n⚠️  Minor or no improvement - dataset may be too hard/easy or need more iterations")
 
-    print(f"\n✅ Real optimization test completed!")
+    print("\n✅ Real optimization test completed!")
 
 
 @pytest.mark.integration
@@ -165,7 +167,7 @@ def test_mipro_real_improvement():
     train_examples, val_examples = split_hard_dataset(train_ratio=0.7)
 
     print(f"\n{'='*80}")
-    print(f"MIPRO REAL OPTIMIZATION TEST - Hard Reasoning Problems")
+    print("MIPRO REAL OPTIMIZATION TEST - Hard Reasoning Problems")
     print(f"{'='*80}")
     print(f"\n📊 Dataset: {len(train_examples)} train, {len(val_examples)} val")
 
@@ -188,7 +190,7 @@ def test_mipro_real_improvement():
     )
 
     # Run optimization
-    print(f"\n🚀 Running MIPRO optimization...")
+    print("\n🚀 Running MIPRO optimization...")
     optimized_program, result = optimizer.optimize(
         program=BasicQA(),
         trainset=train_examples,
@@ -196,7 +198,7 @@ def test_mipro_real_improvement():
     )
 
     # Evaluate optimized program
-    print(f"\n✨ OPTIMIZED (After MIPRO)")
+    print("\n✨ OPTIMIZED (After MIPRO)")
     optimized_score = evaluate_program(optimized_program, val_examples, simple_contains_metric)
 
     # Show improvement
@@ -204,7 +206,7 @@ def test_mipro_real_improvement():
     improvement_pct = (improvement / baseline_score * 100) if baseline_score > 0 else 0
 
     print(f"\n{'='*80}")
-    print(f"RESULTS")
+    print("RESULTS")
     print(f"{'='*80}")
     print(f"Baseline Score:   {baseline_score:.1%}")
     print(f"Optimized Score:  {optimized_score:.1%}")
@@ -213,25 +215,24 @@ def test_mipro_real_improvement():
 
     # Show optimized prompts
     print(f"\n{'='*80}")
-    print(f"OPTIMIZED PROMPTS")
+    print("OPTIMIZED PROMPTS")
     print(f"{'='*80}")
 
     for predictor_name, prompt_data in result.prompts.items():
         print(f"\nPredictor: {predictor_name}")
         if isinstance(prompt_data, dict) and "instruction" in prompt_data:
-            print(f"\nInstruction:")
+            print("\nInstruction:")
             print(f"{prompt_data['instruction']}")
 
     # Verify improvement
-    assert optimized_score >= baseline_score, \
-        f"Optimization should not make things worse"
+    assert optimized_score >= baseline_score, "Optimization should not make things worse"
 
-    print(f"\n✅ Real optimization test completed!")
+    print("\n✅ Real optimization test completed!")
 
 
 if __name__ == "__main__":
     # Run tests directly
     print("Running real optimization tests...")
     test_gepa_real_improvement()
-    print("\n" + "="*80 + "\n")
+    print("\n" + "=" * 80 + "\n")
     test_mipro_real_improvement()

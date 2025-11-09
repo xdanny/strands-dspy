@@ -1,8 +1,9 @@
 """Tests for DSPySessionStorage."""
 
 import pytest
+
 from strands_dspy.storage import DSPySessionStorage
-from strands_dspy.types import OptimizationResult, OptimizationConfig
+from strands_dspy.types import OptimizationConfig, OptimizationResult
 
 
 def test_store_training_example(mock_session_manager):
@@ -15,7 +16,7 @@ def test_store_training_example(mock_session_manager):
         inputs={"question": "What is 2+2?"},
         outputs={"answer": "4"},
         score=1.0,
-        metadata={"test": True}
+        metadata={"test": True},
     )
 
     # Verify message was created
@@ -30,17 +31,10 @@ def test_retrieve_training_examples(mock_session_manager, sample_training_exampl
 
     # Store examples
     for ex in sample_training_examples:
-        storage.store_training_example(
-            session_id="test",
-            agent_id="test_agent",
-            **ex
-        )
+        storage.store_training_example(session_id="test", agent_id="test_agent", **ex)
 
     # Retrieve examples
-    examples = storage.retrieve_training_examples(
-        session_id="test",
-        agent_id="test_agent"
-    )
+    examples = storage.retrieve_training_examples(session_id="test", agent_id="test_agent")
 
     assert len(examples) == 3
     assert examples[0].inputs["question"] == "What is 2+2?"
@@ -54,17 +48,11 @@ def test_retrieve_with_min_score(mock_session_manager, sample_training_examples)
 
     # Store examples
     for ex in sample_training_examples:
-        storage.store_training_example(
-            session_id="test",
-            agent_id="test_agent",
-            **ex
-        )
+        storage.store_training_example(session_id="test", agent_id="test_agent", **ex)
 
     # Retrieve with min_score filter
     examples = storage.retrieve_training_examples(
-        session_id="test",
-        agent_id="test_agent",
-        min_score=1.0
+        session_id="test", agent_id="test_agent", min_score=1.0
     )
 
     # Should only get examples with score >= 1.0
@@ -78,18 +66,10 @@ def test_retrieve_with_limit(mock_session_manager, sample_training_examples):
 
     # Store examples
     for ex in sample_training_examples:
-        storage.store_training_example(
-            session_id="test",
-            agent_id="test_agent",
-            **ex
-        )
+        storage.store_training_example(session_id="test", agent_id="test_agent", **ex)
 
     # Retrieve with limit
-    examples = storage.retrieve_training_examples(
-        session_id="test",
-        agent_id="test_agent",
-        limit=2
-    )
+    examples = storage.retrieve_training_examples(session_id="test", agent_id="test_agent", limit=2)
 
     assert len(examples) == 2
 
@@ -105,13 +85,11 @@ def test_store_optimized_prompts(mock_session_manager):
         val_size=2,
         best_score=0.95,
         config=OptimizationConfig(optimizer_type="mipro"),
-        prompts={"predictor": {"instruction": "Test instruction"}}
+        prompts={"predictor": {"instruction": "Test instruction"}},
     )
 
     storage.store_optimized_prompts(
-        session_id="test",
-        agent_id="test_agent",
-        optimization_result=result
+        session_id="test", agent_id="test_agent", optimization_result=result
     )
 
     # Verify message was created
@@ -133,19 +111,14 @@ def test_retrieve_latest_optimization(mock_session_manager):
             val_size=2,
             best_score=0.9 + (i * 0.01),
             config=OptimizationConfig(optimizer_type="mipro"),
-            prompts={"predictor": {"instruction": f"Instruction {i}"}}
+            prompts={"predictor": {"instruction": f"Instruction {i}"}},
         )
         storage.store_optimized_prompts(
-            session_id="test",
-            agent_id="test_agent",
-            optimization_result=result
+            session_id="test", agent_id="test_agent", optimization_result=result
         )
 
     # Retrieve latest
-    latest = storage.retrieve_latest_optimization(
-        session_id="test",
-        agent_id="test_agent"
-    )
+    latest = storage.retrieve_latest_optimization(session_id="test", agent_id="test_agent")
 
     assert latest is not None
     assert latest.train_size == 12  # Last one stored
@@ -157,17 +130,10 @@ def test_get_training_stats(mock_session_manager, sample_training_examples):
 
     # Store examples
     for ex in sample_training_examples:
-        storage.store_training_example(
-            session_id="test",
-            agent_id="test_agent",
-            **ex
-        )
+        storage.store_training_example(session_id="test", agent_id="test_agent", **ex)
 
     # Get stats
-    stats = storage.get_training_stats(
-        session_id="test",
-        agent_id="test_agent"
-    )
+    stats = storage.get_training_stats(session_id="test", agent_id="test_agent")
 
     assert stats["count"] == 3
     assert stats["avg_score"] == pytest.approx((1.0 + 1.0 + 0.9) / 3)

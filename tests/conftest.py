@@ -1,10 +1,10 @@
 """Pytest configuration and fixtures for strands-dspy tests."""
 
-import pytest
+from unittest.mock import MagicMock
+
 import dspy
-from unittest.mock import AsyncMock, MagicMock
+import pytest
 from strands.session import SessionManager
-from strands.types.session import SessionAgent, SessionMessage
 
 from tests.test_config import setup_test_env
 
@@ -55,19 +55,19 @@ def sample_training_examples():
             "inputs": {"question": "What is 2+2?"},
             "outputs": {"answer": "4"},
             "score": 1.0,
-            "metadata": {"test": True}
+            "metadata": {"test": True},
         },
         {
             "inputs": {"question": "What is the capital of France?"},
             "outputs": {"answer": "Paris"},
             "score": 1.0,
-            "metadata": {"test": True}
+            "metadata": {"test": True},
         },
         {
             "inputs": {"question": "Who wrote Hamlet?"},
             "outputs": {"answer": "William Shakespeare"},
             "score": 0.9,
-            "metadata": {"test": True}
+            "metadata": {"test": True},
         },
     ]
 
@@ -77,28 +77,36 @@ def sample_dspy_examples():
     """Sample DSPy examples for testing."""
     return [
         dspy.Example(question="What is 2+2?", answer="4").with_inputs("question"),
-        dspy.Example(question="What is the capital of France?", answer="Paris").with_inputs("question"),
-        dspy.Example(question="Who wrote Hamlet?", answer="William Shakespeare").with_inputs("question"),
+        dspy.Example(question="What is the capital of France?", answer="Paris").with_inputs(
+            "question"
+        ),
+        dspy.Example(question="Who wrote Hamlet?", answer="William Shakespeare").with_inputs(
+            "question"
+        ),
     ]
 
 
 @pytest.fixture
 def simple_metric():
     """Simple metric function for testing."""
+
     def metric(example, prediction, trace=None):
         if hasattr(prediction, "answer") and hasattr(example, "answer"):
             return 1.0 if example.answer.lower() in prediction.answer.lower() else 0.0
         return 0.0
+
     return metric
 
 
 @pytest.fixture
 def feedback_metric():
     """Feedback metric for GEPA testing."""
+
     def metric(example, prediction, trace=None):
         score = 1.0 if example.answer.lower() in prediction.answer.lower() else 0.0
         feedback = "Correct" if score else "Incorrect"
         return dspy.Prediction(score=score, feedback=feedback)
+
     return metric
 
 
@@ -107,19 +115,11 @@ def mock_agent_result():
     """Mock agent result for testing."""
     result = MagicMock()
     result.stop_reason = "end_turn"
-    result.message = {
-        "role": "assistant",
-        "content": [{"text": "Test answer"}]
-    }
+    result.message = {"role": "assistant", "content": [{"text": "Test answer"}]}
     return result
 
 
 @pytest.fixture
 def sample_messages():
     """Sample message list for testing."""
-    return [
-        {
-            "role": "user",
-            "content": [{"text": "Test question"}]
-        }
-    ]
+    return [{"role": "user", "content": [{"text": "Test question"}]}]

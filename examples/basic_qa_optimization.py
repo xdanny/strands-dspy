@@ -10,6 +10,7 @@ This example demonstrates:
 
 import asyncio
 import os
+
 import dspy
 from dotenv import load_dotenv
 from strands import Agent
@@ -100,13 +101,11 @@ def create_qa_metric():
         pred_lower = prediction.answer.lower()
 
         if answer_lower in pred_lower:
-            return dspy.Prediction(
-                score=1.0, feedback="Correct answer provided"
-            )
+            return dspy.Prediction(score=1.0, feedback="Correct answer provided")
         else:
             return dspy.Prediction(
                 score=0.0,
-                feedback=f"Expected answer containing '{example.answer}', but got '{prediction.answer}'"
+                feedback=f"Expected answer containing '{example.answer}', but got '{prediction.answer}'",
             )
 
     return qa_metric_with_feedback
@@ -190,7 +189,7 @@ async def main():
     print("=" * 60)
     print("\nOptimization will trigger automatically when threshold is reached.")
     print("Check the session storage for optimized prompts.")
-    print(f"\nSession data stored in: sessions/qa_example/")
+    print("\nSession data stored in: sessions/qa_example/")
 
 
 if __name__ == "__main__":

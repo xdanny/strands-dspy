@@ -1,17 +1,17 @@
 """DSPy module templates and signatures for common use cases."""
 
 from strands_dspy.modules.programs import (
-    QAProgram,
     ClassificationProgram,
-    ReasoningProgram,
+    QAProgram,
     RAGProgram,
+    ReasoningProgram,
 )
 from strands_dspy.modules.signatures import (
-    QuestionAnswering,
     Classification,
+    ExtractionTask,
+    QuestionAnswering,
     ReasoningTask,
     SummarizationTask,
-    ExtractionTask,
 )
 
 __all__ = [

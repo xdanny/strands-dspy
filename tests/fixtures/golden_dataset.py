@@ -6,7 +6,6 @@ used for testing prompt optimization quality.
 
 import dspy
 
-
 # Golden dataset: Well-defined Q&A pairs with clear correct answers
 GOLDEN_QA_PAIRS = [
     {
@@ -206,7 +205,9 @@ def contains_metric(example: dspy.Example, prediction, trace=None) -> float:
     return 1.0 if true_answer in pred_answer else 0.0
 
 
-def gepa_feedback_metric(gold: dspy.Example, pred, trace=None, pred_name=None, pred_trace=None) -> dspy.Prediction:
+def gepa_feedback_metric(
+    gold: dspy.Example, pred, trace=None, pred_name=None, pred_trace=None
+) -> dspy.Prediction:
     """Feedback metric for GEPA optimization.
 
     Returns both a score and textual feedback for the optimizer to learn from.
@@ -225,10 +226,7 @@ def gepa_feedback_metric(gold: dspy.Example, pred, trace=None, pred_name=None, p
         dspy.Prediction with score and feedback fields
     """
     if not hasattr(pred, "answer") or not hasattr(gold, "answer"):
-        return dspy.Prediction(
-            score=0.0,
-            feedback="Missing answer field in prediction or example"
-        )
+        return dspy.Prediction(score=0.0, feedback="Missing answer field in prediction or example")
 
     pred_answer = str(pred.answer).strip().lower()
     true_answer = str(gold.answer).strip().lower()
@@ -236,15 +234,14 @@ def gepa_feedback_metric(gold: dspy.Example, pred, trace=None, pred_name=None, p
     # Exact match
     if pred_answer == true_answer:
         return dspy.Prediction(
-            score=1.0,
-            feedback="Perfect! The answer exactly matches the expected answer."
+            score=1.0, feedback="Perfect! The answer exactly matches the expected answer."
         )
 
     # Contains correct answer
     if true_answer in pred_answer:
         return dspy.Prediction(
             score=0.8,
-            feedback=f"Good! The answer contains the correct information '{true_answer}', but has extra text."
+            feedback=f"Good! The answer contains the correct information '{true_answer}', but has extra text.",
         )
 
     # Partially correct (simple heuristic)
@@ -255,11 +252,10 @@ def gepa_feedback_metric(gold: dspy.Example, pred, trace=None, pred_name=None, p
     if overlap > 0.5:
         return dspy.Prediction(
             score=0.5,
-            feedback=f"Partially correct. Expected '{true_answer}' but got '{pred_answer}'. Some keywords match."
+            feedback=f"Partially correct. Expected '{true_answer}' but got '{pred_answer}'. Some keywords match.",
         )
 
     # Completely wrong
     return dspy.Prediction(
-        score=0.0,
-        feedback=f"Incorrect. Expected '{true_answer}' but got '{pred_answer}'."
+        score=0.0, feedback=f"Incorrect. Expected '{true_answer}' but got '{pred_answer}'."
     )

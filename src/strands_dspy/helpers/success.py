@@ -1,6 +1,7 @@
 """Pre-built success criteria for common patterns."""
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 
 def always_success(result: Any) -> tuple[bool, float]:
@@ -101,6 +102,7 @@ def min_length_success(min_chars: int = 50) -> Callable[[Any], tuple[bool, float
         ...     output_extractor=extract_last_assistant_text
         ... )
     """
+
     def check_length(result: Any) -> tuple[bool, float]:
         if not hasattr(result, "message"):
             return False, 0.0
@@ -121,7 +123,9 @@ def min_length_success(min_chars: int = 50) -> Callable[[Any], tuple[bool, float
     return check_length
 
 
-def combine_criteria(*criteria: Callable[[Any], tuple[bool, float]]) -> Callable[[Any], tuple[bool, float]]:
+def combine_criteria(
+    *criteria: Callable[[Any], tuple[bool, float]]
+) -> Callable[[Any], tuple[bool, float]]:
     """Combine multiple success criteria with AND logic.
 
     All criteria must pass for overall success. Score is the minimum
@@ -144,6 +148,7 @@ def combine_criteria(*criteria: Callable[[Any], tuple[bool, float]]) -> Callable
         ...     output_extractor=extract_last_assistant_text
         ... )
     """
+
     def combined(result: Any) -> tuple[bool, float]:
         all_success = True
         min_score = 1.0

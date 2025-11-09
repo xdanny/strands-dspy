@@ -4,6 +4,7 @@ Sets up Gemini API and DSPy for testing.
 """
 
 import os
+
 import dspy
 from dotenv import load_dotenv
 

@@ -10,11 +10,11 @@ This example demonstrates:
 
 import asyncio
 import os
+
 import dspy
 from dotenv import load_dotenv
 from strands import Agent, tool
 from strands.session import FileSessionManager
-from strands.types.tools import ToolContext
 
 from strands_dspy import (
     DSPyOptimizationHook,
@@ -256,7 +256,7 @@ async def main():
     print("  - How the agent uses retrieved context")
     print("  - When to trigger retrieval")
     print("  - How to synthesize answers from multiple sources")
-    print(f"\nSession data: sessions/rag_example/")
+    print("\nSession data: sessions/rag_example/")
 
 
 if __name__ == "__main__":

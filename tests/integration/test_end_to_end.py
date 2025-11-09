@@ -1,12 +1,12 @@
 """End-to-end integration tests using real Gemini API."""
 
-import pytest
-import dspy
 from unittest.mock import MagicMock
+
+import dspy
+import pytest
 
 from strands_dspy import (
     DSPyTrainingCollector,
-    DSPyOptimizationHook,
     OptimizationConfig,
     QAProgram,
 )
@@ -41,8 +41,8 @@ async def test_training_collection_with_real_llm(mock_session_manager):
     )
 
     # Simulate agent invocation
+    from strands.agent.events import AfterInvocationEvent, BeforeInvocationEvent, MessageAddedEvent
     from strands.agent.hooks import HookRegistry
-    from strands.agent.events import BeforeInvocationEvent, MessageAddedEvent, AfterInvocationEvent
 
     registry = HookRegistry()
     collector.register_hooks(registry)
@@ -92,9 +92,7 @@ async def test_mipro_optimization_with_gemini(mock_session_manager, sample_train
     # Store training examples
     storage = DSPySessionStorage(mock_session_manager)
     for ex in sample_training_examples:
-        await storage.store_training_example(
-            session_id="test", agent_id="dspy_training", **ex
-        )
+        await storage.store_training_example(session_id="test", agent_id="dspy_training", **ex)
 
     # Create simple metric
     def metric(example, prediction, trace=None):
@@ -149,9 +147,7 @@ async def test_gepa_optimization_with_gemini(mock_session_manager, sample_traini
     # Store training examples
     storage = DSPySessionStorage(mock_session_manager)
     for ex in sample_training_examples:
-        await storage.store_training_example(
-            session_id="test", agent_id="dspy_training", **ex
-        )
+        await storage.store_training_example(session_id="test", agent_id="dspy_training", **ex)
 
     # Create feedback metric for GEPA
     def feedback_metric(example, prediction, trace=None):
@@ -217,8 +213,8 @@ async def test_qa_program_with_gemini():
     assert isinstance(result.answer, str)
     assert len(result.answer) > 0
 
-    print(f"\n✓ QA Program test:")
-    print(f"  Question: What is the capital of Japan?")
+    print("\n✓ QA Program test:")
+    print("  Question: What is the capital of Japan?")
     print(f"  Answer: {result.answer}")
 
     # Check if answer is reasonable (Tokyo should be mentioned)

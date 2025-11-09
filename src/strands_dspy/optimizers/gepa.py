@@ -2,7 +2,7 @@
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import dspy
 from dspy import GEPA
@@ -58,7 +58,7 @@ class GEPAOptimizer:
         self,
         config: OptimizationConfig,
         metric: MetricFunction,
-        reflection_lm: Optional[dspy.LM] = None,
+        reflection_lm: dspy.LM | None = None,
     ):
         """Initialize GEPA optimizer.
 
@@ -116,8 +116,8 @@ class GEPAOptimizer:
     def optimize(
         self,
         program: dspy.Module,
-        trainset: List[dspy.Example],
-        valset: Optional[List[dspy.Example]] = None,
+        trainset: list[dspy.Example],
+        valset: list[dspy.Example] | None = None,
     ) -> tuple[dspy.Module, OptimizationResult]:
         """Run GEPA optimization on a DSPy program.
 
@@ -153,9 +153,7 @@ class GEPAOptimizer:
                 detailed_results = self._extract_detailed_results(optimized.detailed_results)
                 best_score = detailed_results.get("best_score")
 
-                logger.info(
-                    f"GEPA optimization completed with best score: {best_score}"
-                )
+                logger.info(f"GEPA optimization completed with best score: {best_score}")
             elif valset:
                 # Evaluate manually if no stats tracking
                 best_score = self._evaluate_program(optimized, valset)
@@ -181,7 +179,7 @@ class GEPAOptimizer:
             logger.error(f"GEPA optimization failed: {e}")
             raise
 
-    def _extract_prompts(self, program: dspy.Module) -> Dict[str, Any]:
+    def _extract_prompts(self, program: dspy.Module) -> dict[str, Any]:
         """Extract optimized prompts and demonstrations from a DSPy program.
 
         Args:
@@ -210,8 +208,7 @@ class GEPAOptimizer:
                     demos = module.demos
                     if demos:
                         prompt_data["demos"] = [
-                            {k: str(v) for k, v in demo.items()}
-                            for demo in demos
+                            {k: str(v) for k, v in demo.items()} for demo in demos
                         ]
                     else:
                         prompt_data["demos"] = []
@@ -223,7 +220,7 @@ class GEPAOptimizer:
 
         return prompts
 
-    def _extract_detailed_results(self, detailed_results: Any) -> Dict[str, Any]:
+    def _extract_detailed_results(self, detailed_results: Any) -> dict[str, Any]:
         """Extract detailed optimization results from GEPA.
 
         Args:
@@ -262,7 +259,7 @@ class GEPAOptimizer:
     def _evaluate_program(
         self,
         program: dspy.Module,
-        valset: List[dspy.Example],
+        valset: list[dspy.Example],
     ) -> float:
         """Evaluate program on validation set.
 

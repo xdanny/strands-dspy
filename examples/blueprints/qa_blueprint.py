@@ -14,22 +14,23 @@ Example:
 """
 
 import os
-from dotenv import load_dotenv
+
 import dspy
+from dotenv import load_dotenv
 from strands import Agent
+
 from strands_dspy import (
-    TrainingCollector,
     GEPAOptimizer,
     SessionStorageBackend,
+    TrainingCollector,
 )
 from strands_dspy.helpers import (
+    contains_match_gepa,
+    end_turn_success,
     extract_first_user_text,
     extract_last_assistant_text,
-    end_turn_success,
-    contains_match_gepa,
 )
 from strands_dspy.types import OptimizationConfig
-
 
 # ============================================================================
 # 1. Configure your LM
@@ -103,6 +104,7 @@ collector.attach(qa_agent)
 # 5. Collect training examples
 # ============================================================================
 
+
 def collect_training_examples():
     """Run agent on training data to collect examples."""
     print(f"\n📊 Collecting training examples from {len(TRAINING_DATA)} Q&A pairs...")
@@ -124,6 +126,7 @@ def collect_training_examples():
 # ============================================================================
 # 6. Define your DSPy program
 # ============================================================================
+
 
 class QAProgram(dspy.Module):
     """Simple Q&A DSPy program."""
@@ -151,6 +154,7 @@ VALIDATION_DATA = [
 # 8. Run GEPA optimization
 # ============================================================================
 
+
 def run_optimization():
     """Run GEPA optimization using collected examples."""
 
@@ -159,7 +163,9 @@ def run_optimization():
 
     # Convert to DSPy format
     trainset = [
-        dspy.Example(question=ex.inputs["question"], answer=ex.outputs["answer"]).with_inputs("question")
+        dspy.Example(question=ex.inputs["question"], answer=ex.outputs["answer"]).with_inputs(
+            "question"
+        )
         for ex in training_examples
     ]
 
@@ -168,7 +174,7 @@ def run_optimization():
         for ex in VALIDATION_DATA
     ]
 
-    print(f"\n🔧 Starting GEPA optimization...")
+    print("\n🔧 Starting GEPA optimization...")
     print(f"   Training examples: {len(trainset)}")
     print(f"   Validation examples: {len(valset)}")
 
@@ -193,11 +199,11 @@ def run_optimization():
         valset=valset,
     )
 
-    print(f"\n✨ Optimization complete!")
+    print("\n✨ Optimization complete!")
     print(f"   Best score: {result.best_score:.2%}")
 
     # Show optimized prompts
-    print(f"\n📝 Optimized prompts:")
+    print("\n📝 Optimized prompts:")
     for predictor_name, prompt_data in result.prompts.items():
         print(f"\n{predictor_name}:")
         if "instruction" in prompt_data:
@@ -212,6 +218,7 @@ def run_optimization():
 # 9. Test optimized program
 # ============================================================================
 
+
 def test_optimized_program(program):
     """Test the optimized program on new questions."""
 
@@ -220,7 +227,7 @@ def test_optimized_program(program):
         "What is the capital of Egypt?",
     ]
 
-    print(f"\n🧪 Testing optimized program...")
+    print("\n🧪 Testing optimized program...")
 
     for question in test_questions:
         prediction = program(question=question)

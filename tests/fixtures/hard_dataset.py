@@ -2,7 +2,6 @@
 
 import dspy
 
-
 # Harder reasoning problems that benefit from optimization
 HARD_REASONING_PAIRS = [
     {
@@ -96,7 +95,9 @@ def split_hard_dataset(
     return train_examples, val_examples
 
 
-def hard_reasoning_metric(gold: dspy.Example, pred, trace=None, pred_name=None, pred_trace=None) -> dspy.Prediction:
+def hard_reasoning_metric(
+    gold: dspy.Example, pred, trace=None, pred_name=None, pred_trace=None
+) -> dspy.Prediction:
     """Strict metric for hard reasoning problems with detailed feedback.
 
     This metric is much stricter and provides rich feedback for GEPA.
@@ -114,7 +115,7 @@ def hard_reasoning_metric(gold: dspy.Example, pred, trace=None, pred_name=None, 
     if not hasattr(pred, "answer") or not hasattr(gold, "answer"):
         return dspy.Prediction(
             score=0.0,
-            feedback="ERROR: Missing answer field. Your response must include an 'answer' field with the final answer."
+            feedback="ERROR: Missing answer field. Your response must include an 'answer' field with the final answer.",
         )
 
     pred_answer = str(pred.answer).strip().lower()
@@ -122,28 +123,29 @@ def hard_reasoning_metric(gold: dspy.Example, pred, trace=None, pred_name=None, 
 
     # Extract numbers from answers for numeric comparison
     import re
-    pred_numbers = re.findall(r'-?\d+\.?\d*', pred_answer)
-    true_numbers = re.findall(r'-?\d+\.?\d*', true_answer)
+
+    pred_numbers = re.findall(r"-?\d+\.?\d*", pred_answer)
+    true_numbers = re.findall(r"-?\d+\.?\d*", true_answer)
 
     # Exact match (best)
     if pred_answer == true_answer:
         return dspy.Prediction(
             score=1.0,
-            feedback="PERFECT: Your answer exactly matches the expected answer. Great work!"
+            feedback="PERFECT: Your answer exactly matches the expected answer. Great work!",
         )
 
     # Numeric match (for math problems)
     if pred_numbers and true_numbers and pred_numbers[0] == true_numbers[0]:
         return dspy.Prediction(
             score=0.9,
-            feedback=f"GOOD: Your numerical answer ({pred_numbers[0]}) is correct, but the format doesn't exactly match. Expected format: '{true_answer}'"
+            feedback=f"GOOD: Your numerical answer ({pred_numbers[0]}) is correct, but the format doesn't exactly match. Expected format: '{true_answer}'",
         )
 
     # Partial match (contains key elements)
     if true_answer in pred_answer or pred_answer in true_answer:
         return dspy.Prediction(
             score=0.6,
-            feedback=f"PARTIAL: Your answer contains some correct elements but is not precise enough. You said '{pred_answer}' but the expected answer is '{true_answer}'. Be more specific."
+            feedback=f"PARTIAL: Your answer contains some correct elements but is not precise enough. You said '{pred_answer}' but the expected answer is '{true_answer}'. Be more specific.",
         )
 
     # Check if reasoning is present (even if answer is wrong)
@@ -152,12 +154,12 @@ def hard_reasoning_metric(gold: dspy.Example, pred, trace=None, pred_name=None, 
     if has_reasoning:
         return dspy.Prediction(
             score=0.3,
-            feedback=f"WRONG ANSWER: You provided reasoning which is good, but your answer '{pred_answer}' is incorrect. The correct answer is '{true_answer}'. Review your reasoning - you may have made a calculation error or logical mistake. Focus on: 1) Breaking down the problem step-by-step, 2) Double-checking calculations, 3) Stating the final answer clearly."
+            feedback=f"WRONG ANSWER: You provided reasoning which is good, but your answer '{pred_answer}' is incorrect. The correct answer is '{true_answer}'. Review your reasoning - you may have made a calculation error or logical mistake. Focus on: 1) Breaking down the problem step-by-step, 2) Double-checking calculations, 3) Stating the final answer clearly.",
         )
     else:
         return dspy.Prediction(
             score=0.1,
-            feedback=f"INCOMPLETE: Your answer '{pred_answer}' is wrong AND you didn't show your reasoning. The correct answer is '{true_answer}'. You MUST: 1) Think through the problem step-by-step in the 'reasoning' field, 2) Show your work and calculations, 3) State the final answer clearly. Without reasoning, I can't help you improve."
+            feedback=f"INCOMPLETE: Your answer '{pred_answer}' is wrong AND you didn't show your reasoning. The correct answer is '{true_answer}'. You MUST: 1) Think through the problem step-by-step in the 'reasoning' field, 2) Show your work and calculations, 3) State the final answer clearly. Without reasoning, I can't help you improve.",
         )
 
 
@@ -171,8 +173,9 @@ def simple_contains_metric(example: dspy.Example, prediction, trace=None) -> flo
 
     # Extract numbers
     import re
-    pred_numbers = re.findall(r'-?\d+\.?\d*', pred_answer)
-    true_numbers = re.findall(r'-?\d+\.?\d*', true_answer)
+
+    pred_numbers = re.findall(r"-?\d+\.?\d*", pred_answer)
+    true_numbers = re.findall(r"-?\d+\.?\d*", true_answer)
 
     # Exact match
     if pred_answer == true_answer:

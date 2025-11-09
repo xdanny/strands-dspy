@@ -14,22 +14,23 @@ Example:
 """
 
 import os
-from dotenv import load_dotenv
+
 import dspy
+from dotenv import load_dotenv
 from strands import Agent
+
 from strands_dspy import (
-    TrainingCollector,
     MIPROOptimizer,
     SessionStorageBackend,
+    TrainingCollector,
 )
 from strands_dspy.helpers import (
-    extract_first_user_text,
-    extract_last_assistant_text,
     end_turn_success,
     exact_match,
+    extract_first_user_text,
+    extract_last_assistant_text,
 )
 from strands_dspy.types import OptimizationConfig
-
 
 # ============================================================================
 # 1. Configure your LM
@@ -99,6 +100,7 @@ collector.attach(classifier_agent)
 # 5. Collect training examples
 # ============================================================================
 
+
 def collect_training_examples():
     """Run agent on training data to collect examples."""
     print(f"\n📊 Collecting training examples from {len(TRAINING_DATA)} labeled texts...")
@@ -120,6 +122,7 @@ def collect_training_examples():
 # ============================================================================
 # 6. Define your DSPy program
 # ============================================================================
+
 
 class ClassificationProgram(dspy.Module):
     """Classification DSPy program."""
@@ -149,6 +152,7 @@ VALIDATION_DATA = [
 # 8. Define custom metric for classification
 # ============================================================================
 
+
 def classification_metric(example: dspy.Example, prediction, trace=None) -> float:
     """
     Metric for classification tasks.
@@ -177,6 +181,7 @@ def classification_metric(example: dspy.Example, prediction, trace=None) -> floa
 # 9. Run MIPRO optimization
 # ============================================================================
 
+
 def run_optimization():
     """Run MIPRO optimization for classification."""
 
@@ -194,7 +199,7 @@ def run_optimization():
         for ex in VALIDATION_DATA
     ]
 
-    print(f"\n🔧 Starting MIPRO optimization...")
+    print("\n🔧 Starting MIPRO optimization...")
     print(f"   Training examples: {len(trainset)}")
     print(f"   Validation examples: {len(valset)}")
 
@@ -221,11 +226,11 @@ def run_optimization():
         valset=valset,
     )
 
-    print(f"\n✨ Optimization complete!")
+    print("\n✨ Optimization complete!")
     print(f"   Best score: {result.best_score:.2%}")
 
     # Show optimized prompts
-    print(f"\n📝 Optimized prompts:")
+    print("\n📝 Optimized prompts:")
     for predictor_name, prompt_data in result.prompts.items():
         print(f"\n{predictor_name}:")
         if "instruction" in prompt_data:
@@ -240,6 +245,7 @@ def run_optimization():
 # 10. Test optimized program
 # ============================================================================
 
+
 def test_optimized_program(program):
     """Test the optimized classifier."""
 
@@ -249,7 +255,7 @@ def test_optimized_program(program):
         "Does what it says on the box.",
     ]
 
-    print(f"\n🧪 Testing optimized classifier...")
+    print("\n🧪 Testing optimized classifier...")
 
     for text in test_texts:
         prediction = program(text=text)
@@ -261,6 +267,7 @@ def test_optimized_program(program):
 # Advanced: Custom extractors for multi-field classification
 # ============================================================================
 
+
 def extract_classification_input(messages):
     """
     Custom extractor for classification with context.
@@ -268,7 +275,7 @@ def extract_classification_input(messages):
     Example use case: Classification with additional context fields
     like user history, metadata, etc.
     """
-    from strands_dspy.helpers import combine_extractors, extract_first_user_text
+    from strands_dspy.helpers import extract_first_user_text
 
     # Start with basic text extraction
     result = extract_first_user_text(messages)
@@ -283,6 +290,7 @@ def extract_classification_input(messages):
 # ============================================================================
 # Advanced: Multi-label classification metric
 # ============================================================================
+
 
 def multi_label_metric(example: dspy.Example, prediction, trace=None) -> float:
     """

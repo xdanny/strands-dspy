@@ -1,6 +1,8 @@
 """Pre-built metrics for DSPy optimization."""
 
 import re
+from collections.abc import Callable
+
 import dspy
 
 
@@ -75,8 +77,8 @@ def numeric_match(example: dspy.Example, prediction, trace=None) -> float:
     true_answer = str(example.answer).strip()
 
     # Extract numbers
-    pred_numbers = re.findall(r'-?\d+\.?\d*', pred_answer)
-    true_numbers = re.findall(r'-?\d+\.?\d*', true_answer)
+    pred_numbers = re.findall(r"-?\d+\.?\d*", pred_answer)
+    true_numbers = re.findall(r"-?\d+\.?\d*", true_answer)
 
     if not pred_numbers or not true_numbers:
         # Fall back to contains match if no numbers
@@ -97,7 +99,9 @@ def numeric_match(example: dspy.Example, prediction, trace=None) -> float:
         return 0.0
 
 
-def make_gepa_metric(simple_metric: callable, feedback_fn: callable = None) -> callable:
+def make_gepa_metric(
+    simple_metric: Callable, feedback_fn: Callable | None = None
+) -> Callable:
     """Convert a simple metric (returns float) to GEPA format (returns Prediction with feedback).
 
     GEPA requires metrics to accept 5 arguments and return dspy.Prediction with score and feedback.
@@ -125,7 +129,10 @@ def make_gepa_metric(simple_metric: callable, feedback_fn: callable = None) -> c
         >>>
         >>> gepa_metric = make_gepa_metric(my_metric, custom_feedback)
     """
-    def gepa_metric(gold: dspy.Example, pred, trace=None, pred_name=None, pred_trace=None) -> dspy.Prediction:
+
+    def gepa_metric(
+        gold: dspy.Example, pred, trace=None, pred_name=None, pred_trace=None
+    ) -> dspy.Prediction:
         # Call the simple metric
         score = simple_metric(gold, pred, trace)
 

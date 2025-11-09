@@ -1,10 +1,11 @@
 """Integration test for MIPRO optimization with golden dataset."""
 
-import pytest
 import dspy
+import pytest
+
 from strands_dspy.optimizers.mipro import MIPROOptimizer
 from strands_dspy.types import OptimizationConfig
-from tests.fixtures import split_golden_dataset, contains_metric
+from tests.fixtures import contains_metric, split_golden_dataset
 from tests.test_config import setup_test_env
 
 
@@ -71,7 +72,7 @@ def test_mipro_optimization_improves_performance():
     config = OptimizationConfig(
         optimizer_type="mipro",
         num_candidates=3,  # Reduced for faster testing
-        num_trials=5,      # Reduced for faster testing
+        num_trials=5,  # Reduced for faster testing
         auto_budget="light",
         minibatch=True,
         minibatch_size=5,  # Small minibatch for testing
@@ -92,7 +93,7 @@ def test_mipro_optimization_improves_performance():
         valset=val_examples,
     )
 
-    print(f"\n✨ Optimization complete!")
+    print("\n✨ Optimization complete!")
     print(f"   Best score: {result.best_score:.2%}")
     print(f"   Train examples: {result.train_size}")
     print(f"   Val examples: {result.val_size}")
@@ -132,7 +133,7 @@ def test_mipro_optimization_stores_prompts():
     # Load golden dataset (smaller subset for faster testing)
     train_examples, val_examples = split_golden_dataset(train_ratio=0.7)
     train_examples = train_examples[:10]  # Use only 10 training examples
-    val_examples = val_examples[:3]       # Use only 3 validation examples
+    val_examples = val_examples[:3]  # Use only 3 validation examples
 
     print(f"\n📊 Small dataset: {len(train_examples)} train, {len(val_examples)} val examples")
 
@@ -160,7 +161,7 @@ def test_mipro_optimization_stores_prompts():
     )
 
     # Verify prompt storage
-    print(f"\n✨ Optimization complete!")
+    print("\n✨ Optimization complete!")
     print(f"   Stored prompts: {list(result.prompts.keys())}")
 
     assert isinstance(result.prompts, dict), "Prompts should be a dictionary"

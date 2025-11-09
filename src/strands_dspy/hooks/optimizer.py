@@ -1,7 +1,6 @@
 """DSPy optimization hook for automatic prompt optimization."""
 
 import logging
-from typing import List, Optional
 
 import dspy
 from strands.hooks import AfterInvocationEvent, HookProvider, HookRegistry
@@ -157,7 +156,7 @@ class DSPyOptimizationHook(HookProvider):
     async def run_optimization(
         self,
         session_id: str,
-        training_examples: List[TrainingExample],
+        training_examples: list[TrainingExample],
     ) -> None:
         """Execute DSPy optimization.
 
@@ -231,8 +230,8 @@ class DSPyOptimizationHook(HookProvider):
 
     def _convert_to_dspy_examples(
         self,
-        examples: List[TrainingExample],
-    ) -> List[dspy.Example]:
+        examples: list[TrainingExample],
+    ) -> list[dspy.Example]:
         """Convert TrainingExample objects to DSPy format.
 
         Args:
@@ -264,7 +263,7 @@ class DSPyOptimizationHook(HookProvider):
         logger.debug(f"Converted {len(dspy_examples)} examples to DSPy format")
         return dspy_examples
 
-    async def trigger_manual_optimization(self, session_id: Optional[str] = None) -> bool:
+    async def trigger_manual_optimization(self, session_id: str | None = None) -> bool:
         """Manually trigger optimization regardless of threshold.
 
         This can be called programmatically to force optimization.
@@ -288,7 +287,7 @@ class DSPyOptimizationHook(HookProvider):
         )
 
         if not examples:
-            logger.warning(f"No training examples found for manual optimization")
+            logger.warning("No training examples found for manual optimization")
             return False
 
         logger.info(f"Manually triggering optimization with {len(examples)} examples")

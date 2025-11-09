@@ -1,9 +1,9 @@
 """Memory tools for strands-dspy."""
 
 from strands_dspy.tools.memory_tools import (
+    get_training_stats,
     list_training_examples,
     retrieve_dspy_optimizations,
-    get_training_stats,
 )
 
 __all__ = [

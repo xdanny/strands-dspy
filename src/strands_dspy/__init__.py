@@ -52,11 +52,24 @@ __version__ = "0.1.0"
 # Core hooks
 from strands_dspy.hooks import DSPyOptimizationHook, DSPyTrainingCollector
 
-# Storage
-from strands_dspy.storage import DSPySessionStorage
+# Module templates (optional, for convenience)
+from strands_dspy.modules import (
+    Classification,
+    ClassificationProgram,
+    ExtractionTask,
+    QAProgram,
+    QuestionAnswering,
+    RAGProgram,
+    ReasoningProgram,
+    ReasoningTask,
+    SummarizationTask,
+)
 
 # Optimizers
 from strands_dspy.optimizers import GEPAOptimizer, MIPROOptimizer
+
+# Storage
+from strands_dspy.storage import DSPySessionStorage
 
 # Tools
 from strands_dspy.tools import (
@@ -75,19 +88,6 @@ from strands_dspy.types import (
     ProgramFactory,
     SuccessCriteria,
     TrainingExample,
-)
-
-# Module templates (optional, for convenience)
-from strands_dspy.modules import (
-    QAProgram,
-    ClassificationProgram,
-    ReasoningProgram,
-    RAGProgram,
-    QuestionAnswering,
-    Classification,
-    ReasoningTask,
-    SummarizationTask,
-    ExtractionTask,
 )
 
 __all__ = [

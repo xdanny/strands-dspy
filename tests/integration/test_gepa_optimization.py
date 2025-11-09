@@ -1,10 +1,11 @@
 """Integration test for GEPA optimization with golden dataset."""
 
-import pytest
 import dspy
+import pytest
+
 from strands_dspy.optimizers.gepa import GEPAOptimizer
 from strands_dspy.types import OptimizationConfig
-from tests.fixtures import split_golden_dataset, gepa_feedback_metric, contains_metric
+from tests.fixtures import contains_metric, gepa_feedback_metric, split_golden_dataset
 from tests.test_config import setup_test_env
 
 
@@ -38,7 +39,7 @@ def evaluate_program(program, examples, metric):
             result = metric(example, prediction)
 
             # Extract score from result (could be float or Prediction)
-            if isinstance(result, dspy.Prediction) and hasattr(result, 'score'):
+            if isinstance(result, dspy.Prediction) and hasattr(result, "score"):
                 score = result.score
             else:
                 score = float(result)
@@ -77,10 +78,10 @@ def test_gepa_optimization_improves_performance():
     # Configure GEPA optimizer
     config = OptimizationConfig(
         optimizer_type="gepa",
-        num_candidates=3,      # Reduced for faster testing
-        num_trials=5,          # Reduced for faster testing
+        num_candidates=3,  # Reduced for faster testing
+        num_trials=5,  # Reduced for faster testing
         auto_budget="light",
-        minibatch_size=5,      # Small minibatch for testing
+        minibatch_size=5,  # Small minibatch for testing
         track_stats=True,
     )
 
@@ -92,7 +93,7 @@ def test_gepa_optimization_improves_performance():
     # Run optimization
     print("\n🚀 Running GEPA optimization...")
     print(f"   Config: {config.num_candidates} candidates, {config.num_trials} trials")
-    print(f"   Using feedback-based metric for optimization")
+    print("   Using feedback-based metric for optimization")
 
     optimized_program, result = optimizer.optimize(
         program=SimpleQA(),
@@ -100,7 +101,7 @@ def test_gepa_optimization_improves_performance():
         valset=val_examples,
     )
 
-    print(f"\n✨ Optimization complete!")
+    print("\n✨ Optimization complete!")
     print(f"   Best score: {result.best_score:.2%}")
     print(f"   Train examples: {result.train_size}")
     print(f"   Val examples: {result.val_size}")
@@ -138,7 +139,7 @@ def test_gepa_feedback_integration():
     # Load golden dataset (smaller subset for faster testing)
     train_examples, val_examples = split_golden_dataset(train_ratio=0.7)
     train_examples = train_examples[:10]  # Use only 10 training examples
-    val_examples = val_examples[:3]       # Use only 3 validation examples
+    val_examples = val_examples[:3]  # Use only 3 validation examples
 
     print(f"\n📊 Small dataset: {len(train_examples)} train, {len(val_examples)} val examples")
 
@@ -157,8 +158,8 @@ def test_gepa_feedback_integration():
         print(f"   Score: {feedback_result.score:.2f}")
         print(f"   Feedback: {feedback_result.feedback}")
 
-        assert hasattr(feedback_result, 'score'), "Feedback should have score"
-        assert hasattr(feedback_result, 'feedback'), "Feedback should have feedback text"
+        assert hasattr(feedback_result, "score"), "Feedback should have score"
+        assert hasattr(feedback_result, "feedback"), "Feedback should have feedback text"
 
     except Exception as e:
         print(f"   ⚠️  Feedback metric test error: {e}")
@@ -187,7 +188,7 @@ def test_gepa_feedback_integration():
     )
 
     # Verify prompt storage
-    print(f"\n✨ Optimization complete!")
+    print("\n✨ Optimization complete!")
     print(f"   Stored prompts: {list(result.prompts.keys())}")
 
     assert isinstance(result.prompts, dict), "Prompts should be a dictionary"
@@ -237,13 +238,10 @@ def test_gepa_vs_mipro_comparison():
 
     # Test GEPA
     print("\n🔷 Testing GEPA (feedback-based)...")
-    gepa_config = OptimizationConfig(
-        optimizer_type="gepa",
-        track_stats=True,
-        **base_config
-    )
+    gepa_config = OptimizationConfig(optimizer_type="gepa", track_stats=True, **base_config)
 
     from strands_dspy.optimizers.gepa import GEPAOptimizer
+
     gepa_optimizer = GEPAOptimizer(
         config=gepa_config,
         metric=gepa_feedback_metric,
@@ -256,23 +254,20 @@ def test_gepa_vs_mipro_comparison():
     )
 
     gepa_score = evaluate_program(gepa_program, val_examples, contains_metric)
-    results_comparison['GEPA'] = {
-        'score': gepa_score,
-        'best_score': gepa_result.best_score,
-        'num_prompts': len(gepa_result.prompts),
+    results_comparison["GEPA"] = {
+        "score": gepa_score,
+        "best_score": gepa_result.best_score,
+        "num_prompts": len(gepa_result.prompts),
     }
 
     print(f"   ✅ GEPA score: {gepa_score:.2%}")
 
     # Test MIPRO
     print("\n🔶 Testing MIPRO (score-based)...")
-    mipro_config = OptimizationConfig(
-        optimizer_type="mipro",
-        minibatch=True,
-        **base_config
-    )
+    mipro_config = OptimizationConfig(optimizer_type="mipro", minibatch=True, **base_config)
 
     from strands_dspy.optimizers.mipro import MIPROOptimizer
+
     mipro_optimizer = MIPROOptimizer(
         config=mipro_config,
         metric=contains_metric,
@@ -285,10 +280,10 @@ def test_gepa_vs_mipro_comparison():
     )
 
     mipro_score = evaluate_program(mipro_program, val_examples, contains_metric)
-    results_comparison['MIPRO'] = {
-        'score': mipro_score,
-        'best_score': mipro_result.best_score,
-        'num_prompts': len(mipro_result.prompts),
+    results_comparison["MIPRO"] = {
+        "score": mipro_score,
+        "best_score": mipro_result.best_score,
+        "num_prompts": len(mipro_result.prompts),
     }
 
     print(f"   ✅ MIPRO score: {mipro_score:.2%}")
@@ -307,8 +302,8 @@ def test_gepa_vs_mipro_comparison():
     print("   Both should produce working optimized programs.")
 
     # Basic assertions
-    assert results_comparison['GEPA']['score'] >= 0
-    assert results_comparison['MIPRO']['score'] >= 0
+    assert results_comparison["GEPA"]["score"] >= 0
+    assert results_comparison["MIPRO"]["score"] >= 0
 
     print("\n✅ GEPA vs MIPRO comparison test passed!")
 

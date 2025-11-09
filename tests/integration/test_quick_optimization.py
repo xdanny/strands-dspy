@@ -1,11 +1,12 @@
 """Quick integration test for MIPRO/GEPA optimization (fast version)."""
 
-import pytest
 import dspy
-from strands_dspy.optimizers.mipro import MIPROOptimizer
+import pytest
+
 from strands_dspy.optimizers.gepa import GEPAOptimizer
+from strands_dspy.optimizers.mipro import MIPROOptimizer
 from strands_dspy.types import OptimizationConfig
-from tests.fixtures import split_golden_dataset, contains_metric, gepa_feedback_metric
+from tests.fixtures import contains_metric, gepa_feedback_metric, split_golden_dataset
 from tests.test_config import setup_test_env
 
 
@@ -34,14 +35,14 @@ def test_mipro_quick():
     # Very small dataset for quick test
     train_examples, val_examples = split_golden_dataset(train_ratio=0.7)
     train_examples = train_examples[:5]  # Only 5 training examples
-    val_examples = val_examples[:2]      # Only 2 validation examples
+    val_examples = val_examples[:2]  # Only 2 validation examples
 
     print(f"\n📊 Quick test dataset: {len(train_examples)} train, {len(val_examples)} val")
 
     # Minimal MIPRO config (auto_budget will determine num_trials automatically)
     config = OptimizationConfig(
         optimizer_type="mipro",
-        auto_budget="light",     # Use light budget for quick test
+        auto_budget="light",  # Use light budget for quick test
         minibatch=True,
         minibatch_size=2,
     )
@@ -59,7 +60,7 @@ def test_mipro_quick():
         valset=val_examples,
     )
 
-    print(f"\n✨ Optimization complete!")
+    print("\n✨ Optimization complete!")
     print(f"   Best score: {result.best_score:.2%}")
     print(f"   Optimized prompts: {list(result.prompts.keys())}")
 
@@ -91,7 +92,7 @@ def test_gepa_quick():
     # Minimal GEPA config
     config = OptimizationConfig(
         optimizer_type="gepa",
-        auto_budget="light",     # Use light budget for quick test
+        auto_budget="light",  # Use light budget for quick test
         minibatch_size=2,
         track_stats=True,
     )
@@ -109,7 +110,7 @@ def test_gepa_quick():
         valset=val_examples,
     )
 
-    print(f"\n✨ Optimization complete!")
+    print("\n✨ Optimization complete!")
     print(f"   Best score: {result.best_score:.2%}")
     print(f"   Optimized prompts: {list(result.prompts.keys())}")
 

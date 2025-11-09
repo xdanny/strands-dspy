@@ -9,7 +9,6 @@ This example demonstrates:
 """
 
 import dspy
-from typing import Any
 
 
 # Example 1: Simple accuracy metric for MIPRO
@@ -71,14 +70,13 @@ def feedback_metric_gepa(
 
     # Check exact match
     if answer == pred:
-        return dspy.Prediction(
-            score=1.0, feedback="Perfect match! Answer is completely correct."
-        )
+        return dspy.Prediction(score=1.0, feedback="Perfect match! Answer is completely correct.")
 
     # Check if answer is contained
     if answer in pred:
         return dspy.Prediction(
-            score=0.8, feedback=f"Answer contains the correct information ({answer}) but includes extra details."
+            score=0.8,
+            feedback=f"Answer contains the correct information ({answer}) but includes extra details.",
         )
 
     # Check if key terms are present
@@ -186,7 +184,7 @@ def llm_judge_metric(
 
         return dspy.Prediction(score=float(result.score), feedback=result.feedback)
 
-    except Exception as e:
+    except Exception:
         # Fallback to simple metric if LLM judge fails
         return feedback_metric_gepa(example, prediction, trace)
 
@@ -231,7 +229,8 @@ def classification_metric(
 # Example usage guide
 def print_metric_guide():
     """Print usage guide for custom metrics."""
-    print("""
+    print(
+        """
 Custom Metric Examples for strands-dspy
 ========================================
 
@@ -283,7 +282,8 @@ optimizer = DSPyOptimizationHook(
     metric=feedback_metric_gepa,  # or multi_criteria_metric
     ...
 )
-""")
+"""
+    )
 
 
 if __name__ == "__main__":

@@ -41,5 +41,7 @@ class ExtractionTask(dspy.Signature):
     """Extract specific information from the given text."""
 
     text: str = dspy.InputField(desc="The text to extract information from")
-    extraction_target: str = dspy.InputField(desc="What to extract (e.g., 'dates', 'names', 'key facts')")
+    extraction_target: str = dspy.InputField(
+        desc="What to extract (e.g., 'dates', 'names', 'key facts')"
+    )
     extracted_info: str = dspy.OutputField(desc="The extracted information")

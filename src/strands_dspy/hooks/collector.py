@@ -1,9 +1,15 @@
 """Training example collection hook for Strands agents."""
 
 import logging
-from typing import Any, Dict
+from typing import Any
 
-from strands.hooks import AfterInvocationEvent, BeforeInvocationEvent, MessageAddedEvent, HookProvider, HookRegistry
+from strands.hooks import (
+    AfterInvocationEvent,
+    BeforeInvocationEvent,
+    HookProvider,
+    HookRegistry,
+    MessageAddedEvent,
+)
 from strands.session import SessionManager
 
 from strands_dspy.storage.session_storage import DSPySessionStorage
@@ -80,7 +86,7 @@ class DSPyTrainingCollector(HookProvider):
         self.collection_agent_id = collection_agent_id
 
         # Track current invocations
-        self._current_invocations: Dict[int, Dict[str, Any]] = {}
+        self._current_invocations: dict[int, dict[str, Any]] = {}
 
     def register_hooks(self, registry: HookRegistry) -> None:
         """Register hooks with the Strands agent.

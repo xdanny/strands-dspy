@@ -2,7 +2,7 @@
 
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import dspy
 from dspy.teleprompt import MIPROv2
@@ -53,7 +53,7 @@ class MIPROOptimizer:
         self,
         config: OptimizationConfig,
         metric: MetricFunction,
-        prompt_model: Optional[dspy.LM] = None,
+        prompt_model: dspy.LM | None = None,
     ):
         """Initialize MIPRO optimizer.
 
@@ -96,8 +96,8 @@ class MIPROOptimizer:
     def optimize(
         self,
         program: dspy.Module,
-        trainset: List[dspy.Example],
-        valset: Optional[List[dspy.Example]] = None,
+        trainset: list[dspy.Example],
+        valset: list[dspy.Example] | None = None,
     ) -> tuple[dspy.Module, OptimizationResult]:
         """Run MIPRO optimization on a DSPy program.
 
@@ -162,7 +162,7 @@ class MIPROOptimizer:
             logger.error(f"MIPRO optimization failed: {e}")
             raise
 
-    def _extract_prompts(self, program: dspy.Module) -> Dict[str, Any]:
+    def _extract_prompts(self, program: dspy.Module) -> dict[str, Any]:
         """Extract optimized prompts and demonstrations from a DSPy program.
 
         Args:
@@ -191,8 +191,7 @@ class MIPROOptimizer:
                     demos = module.demos
                     if demos:
                         prompt_data["demos"] = [
-                            {k: str(v) for k, v in demo.items()}
-                            for demo in demos
+                            {k: str(v) for k, v in demo.items()} for demo in demos
                         ]
                     else:
                         prompt_data["demos"] = []
@@ -207,7 +206,7 @@ class MIPROOptimizer:
     def _evaluate_program(
         self,
         program: dspy.Module,
-        valset: List[dspy.Example],
+        valset: list[dspy.Example],
     ) -> float:
         """Evaluate program on validation set.
 
