@@ -99,9 +99,7 @@ def numeric_match(example: dspy.Example, prediction, trace=None) -> float:
         return 0.0
 
 
-def make_gepa_metric(
-    simple_metric: Callable, feedback_fn: Callable | None = None
-) -> Callable:
+def make_gepa_metric(simple_metric: Callable, feedback_fn: Callable | None = None) -> Callable:
     """Convert a simple metric (returns float) to GEPA format (returns Prediction with feedback).
 
     GEPA requires metrics to accept 5 arguments and return dspy.Prediction with score and feedback.
